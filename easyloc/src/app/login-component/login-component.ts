@@ -66,7 +66,7 @@ export class LoginComponent {
 
         this.toastr.success('Connexion réussie !');
 
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashbord']);
       },
       error: (err) => {
         console.error('ERROR:', err);

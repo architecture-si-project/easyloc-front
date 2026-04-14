@@ -1,0 +1,52 @@
+<section class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    Available Housing
+  </h1>
+
+  @if (isLoading) {
+    <p class="text-gray-500">Loading...</p>
+  }
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    @for (house of housings; track house.id) {
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5 hover:shadow-lg transition">
+
+        <!-- Title -->
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+          {{ house.title }}
+        </h2>
+
+        <!-- Location -->
+        <p class="text-sm text-gray-500 mt-1">
+          📍 {{ house.location }}
+        </p>
+
+        <!-- Description -->
+        <p class="text-gray-600 dark:text-gray-300 mt-3">
+          {{ house.description }}
+        </p>
+
+        <!-- Price -->
+        <div class="mt-4 flex justify-between items-center">
+          <span class="text-blue-600 font-semibold">
+            €{{ house.price_per_night }}/night
+          </span>
+
+          <span
+            class="text-sm px-2 py-1 rounded"
+            [class.bg-green-100]="house.available"
+            [class.text-green-700]="house.available"
+            [class.bg-red-100]="!house.available"
+            [class.text-red-700]="!house.available"
+          >
+            {{ house.available ? 'Available' : 'Not available' }}
+          </span>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</section>
