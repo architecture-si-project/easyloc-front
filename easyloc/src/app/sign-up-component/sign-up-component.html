@@ -1,0 +1,103 @@
+<section class="bg-gray-50 dark:bg-gray-900">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+
+    <!-- ❌ remove href="#" -->
+    <div class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+      <svg class="w-8 h-8 mr-2 fill-blue-500"></svg>
+      EasyLock
+    </div>
+
+    <div class="w-full bg-white rounded-lg shadow sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+      <div class="p-6 space-y-6 sm:p-8">
+
+        <h1 class="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
+          Inscription
+        </h1>
+
+        <!-- ✅ Angular form -->
+        <form
+          [formGroup]="signUpForm"
+          (ngSubmit)="signup()"
+          novalidate
+          class="space-y-4"
+        >
+
+          <!-- Email -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Votre mail
+            </label>
+
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="name@company.com"
+              class="bg-gray-50 border border-gray-300 rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:text-white"
+            />
+
+            @if (signUpForm.get('email')?.touched && signUpForm.get('email')?.invalid) {
+              <p class="text-red-500 text-sm">Email invalide</p>
+            }
+          </div>
+
+          <!-- Name -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Votre nom
+            </label>
+
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Votre nom"
+              class="bg-gray-50 border border-gray-300 rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:text-white"
+            />
+
+            @if (signUpForm.get('name')?.touched && signUpForm.get('name')?.invalid) {
+              <p class="text-red-500 text-sm">Nom obligatoire</p>
+            }
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Mot de passe
+            </label>
+
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="••••••••"
+              class="bg-gray-50 border border-gray-300 rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:text-white"
+            />
+
+            @if (signUpForm.get('password')?.touched && signUpForm.get('password')?.invalid) {
+              <p class="text-red-500 text-sm">
+                Minimum 5 caractères
+              </p>
+            }
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            [disabled]="signUpForm.invalid"
+            class="w-full text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-sm px-5 py-2.5 disabled:opacity-50"
+          >
+            S'inscrire
+          </button>
+
+        </form>
+
+        <!-- ✅ outside form -->
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Déjà un compte ?
+          <a routerLink="/login" class="text-blue-600 hover:underline">
+            Login
+          </a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
