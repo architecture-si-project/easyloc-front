@@ -1,0 +1,111 @@
+<main class="reservation-shell">
+  <section class="reservation-grid">
+    <article class="panel">
+      <h1>Reservation des logements</h1>
+      <p class="subtitle">
+        Recherchez un logement disponible puis envoyez votre demande de reservation.
+      </p>
+
+      <form [formGroup]="searchForm" (ngSubmit)="searchHousings()" class="search-form">
+        <label>
+          Localisation
+          <input type="text" formControlName="location" placeholder="Ex: Lyon" />
+        </label>
+
+        <label>
+          Type de bien
+          <input type="text" formControlName="propertyType" placeholder="Ex: studio" />
+        </label>
+
+        <label>
+          Prix max / nuit
+          <input type="number" min="1" formControlName="priceMax" placeholder="120" />
+        </label>
+
+        <label class="check-row">
+          <input type="checkbox" formControlName="availableOnly" />
+          Disponible uniquement
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Rechercher</button>
+          <button type="button" class="btn btn-secondary" (click)="resetSearch()">Reinitialiser</button>
+        </div>
+      </form>
+
+      @if (isLoadingHousings) {
+        <p class="info">Chargement des logements...</p>
+      }
+
+      @if (!isLoadingHousings && housings.length === 0) {
+        <p class="info">Aucun logement trouve.</p>
+      }
+
+      <div class="housing-list">
+        @for (housing of housings; track housing.id) {
+          <div class="housing-card" [class.selected]="selectedHousing?.id === housing.id">
+            <div class="card-top">
+              <h3>{{ housing.title }}</h3>
+              <span class="status" [class.open]="housing.available" [class.closed]="!housing.available">
+                {{ housing.available ? 'Disponible' : 'Indisponible' }}
+              </span>
+            </div>
+
+            <p>{{ housing.location }} - {{ housing.property_type }}</p>
+            <p class="price">{{ housing.price_per_night }} EUR / nuit</p>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="chooseHousing(housing)"
+              [disabled]="!housing.available"
+            >
+              Choisir ce logement
+            </button>
+          </div>
+        }
+      </div>
+    </article>
+
+    <aside class="panel">
+      <h2>Nouvelle demande</h2>
+
+      @if (selectedHousing) {
+        <p class="selected-housing">
+          Logement choisi: <strong>{{ selectedHousing.title }}</strong> (ID {{ selectedHousing.id }})
+        </p>
+      }
+
+      <form [formGroup]="reservationForm" (ngSubmit)="createReservationRequest()" class="reservation-form">
+        <label>
+          Tenant ID
+          <input type="number" min="1" formControlName="tenantId" />
+        </label>
+
+        <label>
+          Housing ID
+          <input type="number" min="1" formControlName="housingId" />
+        </label>
+
+        <label>
+          Date de debut
+          <input type="date" formControlName="startDate" />
+        </label>
+
+        <label>
+          Date de fin
+          <input type="date" formControlName="endDate" />
+        </label>
+
+        <label>
+          Notes
+          <textarea rows="4" formControlName="notes" placeholder="Ex: Arrivee tardive"></textarea>
+        </label>
+
+        <button class="btn btn-primary" type="submit" [disabled]="isSubmittingReservation">
+          {{ isSubmittingReservation ? 'Envoi...' : 'Envoyer la demande' }}
+        </button>
+      </form>
+    </aside>
+  </section>
+</main>

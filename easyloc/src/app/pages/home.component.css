@@ -47,11 +47,15 @@
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
   border: 1px solid transparent;
   padding: 12px 20px;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .btn-primary {
