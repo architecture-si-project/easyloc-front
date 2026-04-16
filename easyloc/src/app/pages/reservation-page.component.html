@@ -78,11 +78,6 @@
 
       <form [formGroup]="reservationForm" (ngSubmit)="createReservationRequest()" class="reservation-form">
         <label>
-          Tenant ID
-          <input type="number" min="1" formControlName="tenantId" />
-        </label>
-
-        <label>
           Housing ID
           <input type="number" min="1" formControlName="housingId" />
         </label>
@@ -106,6 +101,57 @@
           {{ isSubmittingReservation ? 'Envoi...' : 'Envoyer la demande' }}
         </button>
       </form>
+
+      <hr class="divider" />
+
+      <div class="requests-head">
+        <h2>Mes demandes</h2>
+        <button type="button" class="btn btn-secondary" (click)="loadMyRequests()" [disabled]="isLoadingMyRequests">
+          Rafraichir
+        </button>
+      </div>
+
+      <form [formGroup]="myRequestsForm" (ngSubmit)="loadMyRequests()" class="requests-filter-form">
+        <label>
+          Statut
+          <select formControlName="status">
+            <option value="">Tous</option>
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+
+        <button type="submit" class="btn btn-primary" [disabled]="isLoadingMyRequests">Filtrer</button>
+      </form>
+
+      @if (isLoadingMyRequests) {
+        <p class="info">Chargement de vos demandes...</p>
+      }
+
+      @if (!isLoadingMyRequests && myRequests.length === 0) {
+        <p class="info">Aucune demande trouvee pour ce filtre.</p>
+      }
+
+      <div class="request-list">
+        @for (request of myRequests; track trackRequestId($index, request)) {
+          <div class="request-card">
+            <div class="request-head">
+              <h3>Demande #{{ displayRequestId(request) }}</h3>
+              <span class="status-pill" [class]="statusClass(request.status)">
+                {{ request.status }}
+              </span>
+            </div>
+
+            <p>Logement: {{ request.housing_id }}</p>
+            <p>Du {{ request.start_date }} au {{ request.end_date }}</p>
+
+            @if (request.notes) {
+              <p>Notes: {{ request.notes }}</p>
+            }
+          </div>
+        }
+      </div>
     </aside>
   </section>
 </main>

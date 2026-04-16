@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { API_BASE_URLS } from '../api.config';
 import { EntityId } from '../models/housing.model';
 import {
+  CreateReservationRequestResponse,
   CreateReservationRequestPayload,
   ReservationQueryFilters,
   ReservationRequest,
@@ -17,8 +18,10 @@ export class ReservationService {
 
   constructor(private readonly http: HttpClient) {}
 
-  createReservationRequest(payload: CreateReservationRequestPayload): Observable<ReservationRequest> {
-    return this.http.post<ReservationRequest>(this.requestsBaseUrl, payload, {
+  createReservationRequest(
+    payload: CreateReservationRequestPayload,
+  ): Observable<CreateReservationRequestResponse> {
+    return this.http.post<CreateReservationRequestResponse>(this.requestsBaseUrl, payload, {
       headers: this.getJsonHeaders(),
     });
   }
@@ -35,6 +38,19 @@ export class ReservationService {
     }
 
     return this.http.get<ReservationRequest[]>(this.requestsBaseUrl, {
+      params,
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  listMyReservationRequests(filters?: Pick<ReservationQueryFilters, 'status'>): Observable<ReservationRequest[]> {
+    let params = new HttpParams();
+
+    if (filters?.status?.trim()) {
+      params = params.set('status', filters.status.trim());
+    }
+
+    return this.http.get<ReservationRequest[]>(`${this.requestsBaseUrl}/me`, {
       params,
       headers: this.getAuthHeaders(),
     });

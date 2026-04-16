@@ -9,8 +9,9 @@ export type ReservationStatus =
   | string;
 
 export interface ReservationRequest {
-  id: EntityId;
-  tenant_id: number;
+  id?: EntityId;
+  reservation_id?: EntityId;
+  tenant_id?: number;
   housing_id: number;
   start_date: string;
   end_date: string;
@@ -23,11 +24,17 @@ export interface ReservationRequest {
 }
 
 export interface CreateReservationRequestPayload {
-  tenant_id: number;
   housing_id: number;
   start_date: string;
   end_date: string;
   notes?: string;
+}
+
+export interface CreateReservationRequestResponse {
+  reservation_id?: EntityId;
+  id?: EntityId;
+  message?: string;
+  status?: ReservationStatus;
 }
 
 export interface ReservationQueryFilters {

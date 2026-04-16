@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 
 import { Housing, HousingSearchFilters } from '../core/models/housing.model';
+import { ReservationRequest, ReservationStatus } from '../core/models/reservation.model';
 import { HousingService } from '../core/services/housing.service';
 import { ReservationService } from '../core/services/reservation.service';
 
@@ -16,6 +17,14 @@ import { ReservationService } from '../core/services/reservation.service';
   styleUrls: ['./reservation-page.component.css'],
 })
 export class ReservationPageComponent implements OnInit {
+  readonly statusOptions: ReservationStatus[] = [
+    'pending',
+    'under_review',
+    'approved',
+    'rejected',
+    'cancelled',
+  ];
+
   readonly searchForm = new FormGroup({
     location: new FormControl<string>('', { nonNullable: true }),
     propertyType: new FormControl<string>('', { nonNullable: true }),
@@ -24,10 +33,6 @@ export class ReservationPageComponent implements OnInit {
   });
 
   readonly reservationForm = new FormGroup({
-    tenantId: new FormControl<number>(1, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(1)],
-    }),
     housingId: new FormControl<number | null>(null, {
       validators: [Validators.required, Validators.min(1)],
     }),
@@ -42,11 +47,17 @@ export class ReservationPageComponent implements OnInit {
     notes: new FormControl<string>('', { nonNullable: true }),
   });
 
+  readonly myRequestsForm = new FormGroup({
+    status: new FormControl<string>('pending', { nonNullable: true }),
+  });
+
   housings: Housing[] = [];
   selectedHousing: Housing | null = null;
+  myRequests: ReservationRequest[] = [];
 
   isLoadingHousings = false;
   isSubmittingReservation = false;
+  isLoadingMyRequests = false;
 
   constructor(
     private readonly housingService: HousingService,
@@ -56,6 +67,7 @@ export class ReservationPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAllHousings();
+    this.loadMyRequests();
   }
 
   loadAllHousings(): void {
@@ -114,6 +126,11 @@ export class ReservationPageComponent implements OnInit {
   }
 
   createReservationRequest(): void {
+    if (!sessionStorage.getItem('token')?.trim()) {
+      this.toastr.error('Connectez-vous pour creer une reservation.');
+      return;
+    }
+
     if (this.reservationForm.invalid) {
       this.reservationForm.markAllAsTouched();
       return;
@@ -127,7 +144,6 @@ export class ReservationPageComponent implements OnInit {
       return;
     }
 
-    const tenantId = this.reservationForm.controls.tenantId.value;
     const housingId = this.reservationForm.controls.housingId.value;
 
     if (housingId === null) {
@@ -139,7 +155,6 @@ export class ReservationPageComponent implements OnInit {
 
     this.reservationService
       .createReservationRequest({
-        tenant_id: tenantId,
         housing_id: housingId,
         start_date: startDate,
         end_date: endDate,
@@ -148,16 +163,71 @@ export class ReservationPageComponent implements OnInit {
       .pipe(finalize(() => (this.isSubmittingReservation = false)))
       .subscribe({
         next: (reservation) => {
-          this.toastr.success(`Demande envoyee (ID: ${reservation.id}).`);
+          const reservationId = reservation.reservation_id ?? reservation.id;
+          const successMessage = reservationId
+            ? `Demande envoyee (ID: ${reservationId}).`
+            : 'Demande de reservation envoyee.';
+
+          this.toastr.success(successMessage);
           this.reservationForm.patchValue({
             startDate: '',
             endDate: '',
             notes: '',
           });
+          this.loadMyRequests();
         },
         error: () => {
           this.toastr.error('Impossible de creer la demande de reservation.');
         },
       });
+  }
+
+  loadMyRequests(): void {
+    if (!sessionStorage.getItem('token')?.trim()) {
+      this.myRequests = [];
+      return;
+    }
+
+    this.isLoadingMyRequests = true;
+
+    const status = this.myRequestsForm.controls.status.value.trim();
+
+    this.reservationService
+      .listMyReservationRequests({
+        status: status || undefined,
+      })
+      .pipe(finalize(() => (this.isLoadingMyRequests = false)))
+      .subscribe({
+        next: (requests) => {
+          this.myRequests = requests;
+        },
+        error: () => {
+          this.toastr.error('Impossible de charger vos demandes de reservation.');
+        },
+      });
+  }
+
+  trackRequestId(index: number, request: ReservationRequest): string | number {
+    return request.reservation_id ?? request.id ?? `request-${index}-${request.housing_id}-${request.start_date}`;
+  }
+
+  displayRequestId(request: ReservationRequest): string | number {
+    return request.reservation_id ?? request.id ?? '-';
+  }
+
+  statusClass(status: string): string {
+    if (status === 'approved') {
+      return 'status-approved';
+    }
+
+    if (status === 'rejected' || status === 'cancelled') {
+      return 'status-rejected';
+    }
+
+    if (status === 'under_review') {
+      return 'status-review';
+    }
+
+    return 'status-pending';
   }
 }
