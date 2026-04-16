@@ -3,10 +3,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { API_BASE_URLS } from '../core/api.config';
 import { AuthService } from '../services/auth.service';
-
-
-
 
 @Component({
   selector: 'app-login-component',
@@ -53,7 +51,7 @@ export class LoginComponent {
     this.isLoading = true;
 
     this.http.post<any>(
-      'http://localhost:5001/auth/login',
+      `${API_BASE_URLS.user}/auth/login`,
       payload,
       {
         headers: new HttpHeaders({

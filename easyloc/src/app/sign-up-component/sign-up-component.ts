@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { API_BASE_URLS } from '../core/api.config';
 
 @Component({
   selector: 'app-sign-up-component',
@@ -48,7 +49,7 @@ export class SignUpComponent {
 
     console.log('payload sent:', payload); 
     this.http.post<any>(
-      'http://localhost:5001/auth/register',
+      `${API_BASE_URLS.user}/auth/register`,
       payload,
       {
         headers: new HttpHeaders({
