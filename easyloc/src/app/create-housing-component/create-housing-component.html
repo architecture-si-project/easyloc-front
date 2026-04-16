@@ -1,69 +1,98 @@
-<section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-6">
+<section class="create-page">
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
 
-  <div class="w-full max-w-xl bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+  <div class="create-layout">
+    <aside class="intro-panel">
+      <p class="eyebrow">EasyLoc Host</p>
+      <h1>Publiez un logement dont les voyageurs se souviendront.</h1>
+      <p class="intro-copy">
+        Transformez votre idee en annonce en moins d'une minute. Ajoutez un titre clair,
+        les details du logement et votre tarif par nuit pour publier instantanement.
+      </p>
 
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-      Create New Location
-    </h1>
+      <ul class="feature-list">
+        <li>Creation plus rapide de nouvelles annonces</li>
+        <li>Champs bien organises pour eviter les erreurs</li>
+        <li>Optimise pour ordinateur et mobile</li>
+      </ul>
+    </aside>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div class="form-card">
+      <div class="form-head">
+        <h2>Creer une nouvelle location</h2>
+        <p>Renseignez l'essentiel pour publier votre logement.</p>
+      </div>
 
-      <!-- Title -->
-      <input
-        type="text"
-        formControlName="title"
-        placeholder="Title"
-        class="w-full p-3 rounded border dark:bg-gray-700 dark:text-white"
-      />
+      <form [formGroup]="form" (ngSubmit)="submit()" class="housing-form">
+        <div class="field-group">
+          <label for="title">Titre</label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            placeholder="Appartement proche du centre-ville"
+          />
+        </div>
 
-      <!-- Description -->
-      <textarea
-        formControlName="description"
-        placeholder="Description"
-        class="w-full p-3 rounded border dark:bg-gray-700 dark:text-white"
-      ></textarea>
+        <div class="field-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            placeholder="Qu'est-ce qui rend ce logement special ?"
+          ></textarea>
+        </div>
 
-      <!-- Property Type -->
-      <input
-        type="text"
-        formControlName="property_type"
-        placeholder="Property type (apartment, house...)"
-        class="w-full p-3 rounded border dark:bg-gray-700 dark:text-white"
-      />
+        <div class="row two-cols">
+          <div class="field-group">
+            <label for="property_type">Type de logement</label>
+            <select
+              id="property_type"
+              formControlName="property_type"
+              class="property-select"
+            >
+              <option value="" disabled selected>Choisir un type...</option>
+              <option value="maison">Maison</option>
+              <option value="appartement">Appartement</option>
+              <option value="studio">Studio</option>
+              <option value="villa">Villa</option>
+            </select>
+          </div>
 
-      <!-- Location -->
-      <input
-        type="text"
-        formControlName="location"
-        placeholder="Location"
-        class="w-full p-3 rounded border dark:bg-gray-700 dark:text-white"
-      />
+          <div class="field-group">
+            <label for="location">Ville</label>
+            <input
+              id="location"
+              type="text"
+              formControlName="location"
+              placeholder="Paris, Lyon, Marseille..."
+            />
+          </div>
+        </div>
 
-      <!-- Price -->
-      <input
-        type="number"
-        formControlName="price_per_night"
-        placeholder="Price per night"
-        class="w-full p-3 rounded border dark:bg-gray-700 dark:text-white"
-      />
+        <div class="row two-cols align-end">
+          <div class="field-group">
+            <label for="price_per_night">Prix par nuit</label>
+            <input
+              id="price_per_night"
+              type="number"
+              formControlName="price_per_night"
+              placeholder="120"
+            />
+          </div>
 
-      <!-- Available -->
-      <label class="flex items-center gap-2 text-gray-700 dark:text-white">
-        <input type="checkbox" formControlName="available">
-        Available
-      </label>
+          <label class="availability-toggle" for="available">
+            <input id="available" type="checkbox" formControlName="available" />
+            <span>Disponible a la reservation</span>
+          </label>
+        </div>
 
-      <!-- Submit -->
-      <button
-        type="submit"
-        [disabled]="isLoading"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg"
-      >
-        {{ isLoading ? 'Creating...' : 'Create Location' }}
-      </button>
-
-    </form>
-
+        <button type="submit" [disabled]="isLoading" class="submit-btn">
+          {{ isLoading ? 'Creation...' : 'Creer la location' }}
+        </button>
+      </form>
+    </div>
   </div>
-
 </section>

@@ -21,7 +21,6 @@ export class CreateHousingComponent {
     location: new FormControl('', [Validators.required]),
     price_per_night: new FormControl(0, [Validators.required, Validators.min(1)]),
     available: new FormControl(true),
-    owner_id: new FormControl(1)
   });
 
   isLoading = false;
@@ -40,14 +39,22 @@ export class CreateHousingComponent {
 
     this.isLoading = true;
 
-    this.housingService.createHousing(this.form.getRawValue()).subscribe({
+    const payload = this.form.getRawValue();
+
+    this.housingService.createHousing(payload).subscribe({
       next: () => {
         this.toastr.success('Location créée avec succès !');
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error(err);
-        this.toastr.error('Erreur lors de la création');
+
+        if (err.status === 401) {
+          this.toastr.error('Session expirée, reconnectez-vous');
+          this.router.navigate(['/login']);
+        } else {
+          this.toastr.error('Erreur lors de la création');
+        }
       },
       complete: () => {
         this.isLoading = false;
