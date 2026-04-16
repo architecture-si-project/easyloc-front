@@ -123,6 +123,7 @@
 }
 
 .housing-card {
+	position: relative;
 	background: var(--card-bg);
 	border: 1px solid rgba(255, 255, 255, 0.75);
 	border-radius: 1.1rem;
@@ -132,6 +133,7 @@
 		inset 0 1px 0 rgba(255, 255, 255, 0.65);
 	display: grid;
 	gap: 0.68rem;
+	cursor: pointer;
 	transition: transform 0.2s ease, box-shadow 0.22s ease;
 }
 
@@ -143,6 +145,8 @@
 }
 
 .card-top {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	justify-content: space-between;
 	gap: 0.75rem;
@@ -174,6 +178,8 @@
 }
 
 .location {
+	position: relative;
+	z-index: 1;
 	margin: 0;
 	color: #475569;
 	font-size: 0.92rem;
@@ -185,6 +191,8 @@
 }
 
 .description {
+	position: relative;
+	z-index: 1;
 	margin: 0;
 	color: #334155;
 	line-height: 1.5;
@@ -196,11 +204,20 @@
 }
 
 .card-bottom {
+	position: relative;
+	z-index: 1;
 	margin-top: 0.2rem;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	gap: 0.6rem;
+}
+
+.card-link-overlay {
+	position: absolute;
+	inset: 0;
+	border-radius: 1.1rem;
+	z-index: 2;
 }
 
 .price {
@@ -213,6 +230,22 @@
 	color: #64748b;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
+}
+
+.reserve-link {
+	text-decoration: none;
+	font-size: 0.83rem;
+	font-weight: 700;
+	padding: 0.42rem 0.68rem;
+	border-radius: 999px;
+	background: rgba(15, 118, 110, 0.14);
+	color: #0f766e;
+	transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.reserve-link:hover {
+	background: rgba(15, 118, 110, 0.22);
+	transform: translateY(-1px);
 }
 
 .fab {
@@ -455,6 +488,15 @@
 :host-context(body.dark-mode) .status-pill.is-unavailable {
 	background: rgba(248, 113, 113, 0.14);
 	color: #fca5a5;
+}
+
+:host-context(body.dark-mode) .reserve-link {
+	background: rgba(45, 212, 191, 0.18);
+	color: #5eead4;
+}
+
+:host-context(body.dark-mode) .reserve-link:hover {
+	background: rgba(45, 212, 191, 0.28);
 }
 
 :host-context(body.dark-mode) .reset-btn:hover {

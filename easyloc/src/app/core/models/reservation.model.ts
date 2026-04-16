@@ -40,6 +40,7 @@ export interface CreateReservationRequestResponse {
 export interface ReservationQueryFilters {
   status?: string;
   tenant_id?: number;
+  housing_id?: number;
 }
 
 export interface UpdateReservationStatusPayload {
