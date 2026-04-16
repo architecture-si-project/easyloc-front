@@ -400,7 +400,7 @@ export class ReservationPageComponent implements OnInit {
       return 'status-approved';
     }
 
-    if (status === 'rejected' || status === 'cancelled') {
+    if (status === 'rejected' || status === 'closed') {
       return 'status-rejected';
     }
 

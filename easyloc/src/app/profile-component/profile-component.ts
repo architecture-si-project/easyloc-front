@@ -4,6 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HousingService } from '../services/HousingService';
 import { ResaService } from '../services/resaService';
+import { AuthService } from '../services/auth.service';
 
 interface ReservationDisplay {
   id: number;
@@ -12,6 +13,7 @@ interface ReservationDisplay {
   status: { value: string; label: string };
   notes?: string;
   housing_id?: number;
+  tenant_id?: number;
 }
 
 @Component({
@@ -26,21 +28,26 @@ export class ProfileComponent implements OnInit {
 
   isLoadingHousings = true;
   isLoadingReservations = true;
+  updatingReservationId: number | null = null;
 
   housingError = '';
   reservationError = '';
+  reservationActionMessage = '';
 
   private statusLabels: Record<string, string> = {
     pending: 'En attente',
     under_review: 'En cours d\'examen',
     approved: 'Approuvée',
     rejected: 'Rejetée',
-    cancelled: 'Annulée',
+    contract_signed: 'Contrat signé',
+    active: 'Active',
+    closed: 'Cloturée',
   };
 
   constructor(
     private housingService: HousingService,
     private resaService: ResaService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -73,6 +80,7 @@ export class ProfileComponent implements OnInit {
   private loadUserReservations(): void {
     this.isLoadingReservations = true;
     this.reservationError = '';
+    this.reservationActionMessage = '';
 
     this.resaService.getUserResa().subscribe({
       next: (data) => {
@@ -179,7 +187,121 @@ export class ProfileComponent implements OnInit {
       },
       notes: resa?.notes,
       housing_id: resa?.housing_id || resa?.housing?.id || undefined,
+      tenant_id: resa?.tenant_id || undefined,
     };
+  }
+
+  canCancelReservation(resa: ReservationDisplay): boolean {
+    const status = String(resa?.status?.value || '').toLowerCase();
+    return status === 'pending' || status === 'under_review' || status === 'approved' || status === 'contract_signed' || status === 'active';
+  }
+
+  cancelReservation(resa: ReservationDisplay): void {
+    const reservationId = Number(resa?.id);
+    if (!Number.isFinite(reservationId) || reservationId <= 0) {
+      this.reservationError = 'Reservation invalide.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!this.canCancelReservation(resa)) {
+      this.reservationError = 'Cette reservation ne peut pas etre annulee.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const actorId = this.getActorIdForCancellation(resa);
+    if (!actorId) {
+      this.reservationError = 'Impossible de determiner votre identifiant pour annuler cette reservation.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.updatingReservationId = reservationId;
+    this.reservationError = '';
+    this.reservationActionMessage = '';
+
+    this.resaService.updateReservationStatus(reservationId, { status: 'rejected', actor_id: actorId }).subscribe({
+      next: () => {
+        this.userReservations = this.userReservations.map((item) => {
+          if (Number(item.id) !== reservationId) {
+            return item;
+          }
+
+          return {
+            ...item,
+            status: {
+              value: 'rejected',
+              label: this.statusLabels['rejected'],
+            },
+          };
+        });
+
+        this.updatingReservationId = null;
+        this.reservationActionMessage = 'Reservation annulee avec succes.';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.updatingReservationId = null;
+        this.reservationError = this.getReservationUpdateErrorMessage(err);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private getActorIdForCancellation(resa: ReservationDisplay): number | null {
+    const tenantId = Number(resa?.tenant_id);
+    if (Number.isFinite(tenantId) && tenantId > 0) {
+      return tenantId;
+    }
+
+    const token = this.authService.getToken();
+    const tokenUserId = this.extractUserIdFromToken(token);
+    if (tokenUserId) {
+      return tokenUserId;
+    }
+
+    return null;
+  }
+
+  private extractUserIdFromToken(token: string | null): number | null {
+    if (!token) {
+      return null;
+    }
+
+    const tokenParts = token.split('.');
+    if (tokenParts.length < 2) {
+      return null;
+    }
+
+    try {
+      const payloadSegment = tokenParts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const normalizedPayload = payloadSegment.padEnd(Math.ceil(payloadSegment.length / 4) * 4, '=');
+      const decodedPayload = atob(normalizedPayload);
+      const payload = JSON.parse(decodedPayload);
+
+      const idCandidate = payload?.id ?? payload?.user_id ?? payload?.sub;
+      const parsedId = Number(idCandidate);
+      return Number.isFinite(parsedId) && parsedId > 0 ? parsedId : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private getReservationUpdateErrorMessage(err: any): string {
+    if (err?.status === 400) {
+      return 'Statut invalide pour cette reservation.';
+    }
+
+    if (err?.status === 404) {
+      return 'Demande de reservation introuvable.';
+    }
+
+    if (err?.status === 409) {
+      return 'Cette reservation ne peut plus etre annulee.';
+    }
+
+    return 'Impossible d\'annuler la reservation pour le moment.';
   }
 
   private formatDateRange(startDate: string, endDate: string): string {

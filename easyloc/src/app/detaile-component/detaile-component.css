@@ -344,8 +344,7 @@
   background: rgba(74, 222, 128, 0.26);
 }
 
-.status-pill.is-rejected,
-.status-pill.is-cancelled {
+.status-pill.is-rejected {
   color: #7f1d1d;
   background: rgba(252, 165, 165, 0.33);
 }

@@ -5,7 +5,9 @@ export type ReservationStatus =
   | 'under_review'
   | 'approved'
   | 'rejected'
-  | 'cancelled'
+  | 'contract_signed'
+  | 'active'
+  | 'closed'
   | string;
 
 export interface ReservationRequest {

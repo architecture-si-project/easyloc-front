@@ -9,18 +9,21 @@
 	--focus: #14b8a6;
 
 	display: block;
-	min-height: 100vh;
+	height: calc(100dvh - 64px);
+	min-height: calc(100dvh - 64px);
 	color: var(--ink);
 	font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .create-page {
 	position: relative;
-	min-height: 100vh;
+	height: 100%;
+	min-height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: clamp(1.25rem, 2.5vw, 2.5rem);
+	box-sizing: border-box;
 	background:
 		radial-gradient(circle at 12% 15%, rgba(15, 118, 110, 0.2), transparent 38%),
 		radial-gradient(circle at 82% 90%, rgba(245, 158, 11, 0.16), transparent 42%),
@@ -54,11 +57,7 @@
 .create-layout {
 	position: relative;
 	z-index: 1;
-	width: min(1120px, 100%);
-	display: grid;
-	grid-template-columns: 1.05fr 1.35fr;
-	gap: clamp(1rem, 2vw, 2rem);
-	align-items: stretch;
+	width: min(760px, 100%);
 }
 
 .intro-panel {
@@ -118,6 +117,7 @@
 }
 
 .form-card {
+	width: 100%;
 	background: var(--card-bg);
 	border: 1px solid rgba(255, 255, 255, 0.75);
 	border-radius: 1.25rem;

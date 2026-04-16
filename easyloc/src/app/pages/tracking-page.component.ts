@@ -20,7 +20,9 @@ export class TrackingPageComponent implements OnInit {
     'under_review',
     'approved',
     'rejected',
-    'cancelled',
+    'contract_signed',
+    'active',
+    'closed',
   ];
 
   readonly updateForm = new FormGroup({
@@ -113,8 +115,12 @@ export class TrackingPageComponent implements OnInit {
       return 'status-approved';
     }
 
-    if (status === 'rejected' || status === 'cancelled') {
+    if (status === 'rejected' || status === 'closed') {
       return 'status-rejected';
+    }
+
+    if (status === 'contract_signed' || status === 'active') {
+      return 'status-approved';
     }
 
     if (status === 'under_review') {
