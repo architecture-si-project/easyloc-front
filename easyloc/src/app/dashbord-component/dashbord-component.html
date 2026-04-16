@@ -1,0 +1,131 @@
+<section class="dashboard-page">
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div class="dashboard-shell">
+    <header class="dashboard-header">
+      <p class="eyebrow">EasyLoc Dashboard</p>
+      <h1>Logement disponible</h1>
+      <p class="subtitle">Suivez vos annonces et verifiez leur disponibilite en un coup d'oeil.</p>
+    </header>
+
+    <p *ngIf="isLoading" class="state-message">Chargement de vos logements...</p>
+
+    <!-- Filters Section -->
+    <div *ngIf="!isLoading && allHousings.length > 0" class="filters-section">
+      <div class="filters-container">
+        <div class="filter-group">
+          <label for="search-city">Ville</label>
+          <input
+            id="search-city"
+            type="text"
+            [(ngModel)]="searchCity"
+            (input)="onFilterChange()"
+            placeholder="Rechercher par ville..."
+            class="filter-input"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="property-type">Type de Logement</label>
+          <select
+            id="property-type"
+            [(ngModel)]="selectedType"
+            (change)="onFilterChange()"
+            class="filter-select"
+          >
+            <option value="">Tous les types</option>
+            <option value="maison">Maison</option>
+            <option value="appartement">Appartement</option>
+            <option value="studio">Studio</option>
+            <option value="villa">Villa</option>
+          </select>
+        </div>
+
+        <div class="filter-group price-group">
+          <label for="min-price">Prix Min</label>
+          <div class="price-input-wrapper">
+            <input
+              id="min-price"
+              type="number"
+              min="0"
+              max="1000"
+              step="0.5"    
+              [(ngModel)]="minPrice"
+              (input)="onFilterChange()"
+              class="filter-price-input"
+            />
+            <span class="currency">€</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="1000"
+            step="0.5"
+            [(ngModel)]="minPrice"
+            (input)="onFilterChange()"
+            class="filter-range"
+          />
+        </div>
+
+        <div class="filter-group price-group">
+          <label for="max-price">Prix Max</label>
+          <div class="price-input-wrapper">
+            <input
+              id="max-price"
+              type="number"
+              min="0"
+              max="1000"
+              step="0.5"
+              [(ngModel)]="maxPrice"
+              (input)="onFilterChange()"
+              class="filter-price-input"
+            />
+            <span class="currency">€</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="1000"
+            step="0.5"
+            [(ngModel)]="maxPrice"
+            (input)="onFilterChange()"
+            class="filter-range"
+          />
+        </div>
+
+        <button (click)="resetFilters()" class="reset-btn">Réinitialiser</button>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && housings.length === 0" class="empty-state">
+      <h2>Aucun logement trouve</h2>
+      <p>Aucune location pour le moment.</p>
+      <a routerLink="/createRental" class="empty-cta">Creer une location</a>
+    </div>
+
+    <div *ngIf="!isLoading && housings.length > 0" class="housing-grid">
+      <article *ngFor="let house of housings; trackBy: trackById" class="housing-card">
+        <div class="card-top">
+          <h2>{{ house.title }}</h2>
+          <span class="status-pill" [class.is-available]="house.available" [class.is-unavailable]="!house.available">
+            {{ house.available ? 'Disponible' : 'Indisponible' }}
+          </span>
+        </div>
+
+        <p class="location">{{ house.location }}</p>
+
+        <p class="description">
+          {{ house.description || 'Aucune description disponible pour ce logement.' }}
+        </p>
+
+        <div class="card-bottom">
+          <span class="price">€{{ house.price_per_night }}/Nuit</span>
+          <span class="meta">Logement</span>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <a routerLink="/createRental" class="fab" aria-label="Creer une location">+</a>
+</section>

@@ -4,13 +4,41 @@
 
     <div class="nav-links">
       <a routerLink="/">Accueil</a>
+      <a href="/dashboard">Dashboard</a>
       <a routerLink="/reservation">Reservation</a>
       <a routerLink="/suivi-demandes">Suivi des demandes</a>
     </div>
 
     <div class="nav-actions">
-      <a routerLink="/login" class="link-login">Connexion</a>
-      <a routerLink="/signup" class="btn-signup">S'inscrire</a>
+      <button type="button" class="theme-toggle" (click)="toggleTheme()">
+        <span class="sr-only">
+          {{ isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre' }}
+        </span>
+        <svg *ngIf="!isDarkMode" viewBox="0 0 24 24" aria-hidden="true" class="theme-icon">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+        </svg>
+        <svg *ngIf="isDarkMode" viewBox="0 0 24 24" aria-hidden="true" class="theme-icon">
+          <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75Zm0 15a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0-12a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm0 15a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25a.75.75 0 0 1 .75-.75ZM4.5 11.25h-1.5a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5Zm16.5 0h-1.5a.75.75 0 0 0 0 1.5H21a.75.75 0 0 0 0-1.5ZM6.697 6.697a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 0-1.06Zm8.486 8.486a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 0-1.06ZM6.697 17.303a.75.75 0 0 1 0-1.06l1.06-1.06a.75.75 0 0 1 1.06 1.06l-1.06 1.06a.75.75 0 0 1-1.06 0Zm8.486-8.486a.75.75 0 0 1 0-1.06l1.06-1.06a.75.75 0 0 1 1.06 1.06l-1.06 1.06a.75.75 0 0 1-1.06 0Z" />
+        </svg>
+      </button>
+
+      <!-- NOT logged in -->
+      <ng-container *ngIf="!token">
+        <a routerLink="/login" class="link-login">Connexion</a>
+        <a routerLink="/signup" class="btn-signup">S'inscrire</a>
+      </ng-container>
+
+      <!-- LOGGED in -->
+      <ng-container *ngIf="token">
+        <a routerLink="/profile" class="link-login" aria-label="Voir mon profil">
+          {{ email || 'Utilisateur' }}
+        </a>
+
+        <a (click)="logout()" routerLink="/login" class="btn-signup" style="cursor:pointer;">
+          Déconnexion
+        </a>
+      </ng-container>
+
     </div>
   </div>
 </nav>

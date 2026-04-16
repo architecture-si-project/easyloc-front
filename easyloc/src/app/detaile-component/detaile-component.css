@@ -1,0 +1,201 @@
+:host {
+	display: block;
+	min-height: 100vh;
+	font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.details-page {
+	min-height: 100vh;
+	padding: clamp(1rem, 2.4vw, 2rem);
+	background:
+		radial-gradient(circle at 8% 12%, rgba(15, 118, 110, 0.12), transparent 35%),
+		linear-gradient(145deg, #f8f4ec, #ece4d6);
+}
+
+.details-shell {
+	width: min(1000px, 100%);
+	margin: 0 auto;
+	display: grid;
+	gap: 1rem;
+}
+
+.details-header h1 {
+	margin: 0.4rem 0 0;
+	color: #0f172a;
+}
+
+.back-link {
+	color: #0f766e;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.details-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.panel-card {
+	background: rgba(255, 255, 255, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1rem;
+	padding: 1rem;
+	box-shadow: 0 12px 24px rgba(22, 30, 45, 0.08);
+}
+
+.panel-card h2 {
+	margin: 0 0 0.7rem;
+	color: #0f172a;
+}
+
+.state-text {
+	margin: 0;
+	color: #64748b;
+}
+
+.state-text.error {
+	color: #dc2626;
+}
+
+.state-text.success {
+	color: #0f766e;
+}
+
+.content-block {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.content-block p {
+	margin: 0;
+	color: #334155;
+}
+
+.content-block span {
+	color: #0f172a;
+	font-weight: 600;
+}
+
+.edit-form {
+	display: grid;
+	gap: 0.7rem;
+}
+
+.edit-form label {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.edit-form label span {
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea {
+	border: 1px solid #d1d5db;
+	border-radius: 0.65rem;
+	padding: 0.55rem 0.7rem;
+	font: inherit;
+	color: #0f172a;
+	background: rgba(255, 255, 255, 0.9);
+}
+
+.edit-form textarea {
+	resize: vertical;
+}
+
+.checkbox-row {
+	display: flex !important;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.checkbox-row input {
+	width: 16px;
+	height: 16px;
+}
+
+.actions-row {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+
+.action-btn {
+	border: 1px solid #0f766e;
+	background: #0f766e;
+	color: #fff;
+	font: inherit;
+	font-weight: 600;
+	border-radius: 0.65rem;
+	padding: 0.45rem 0.8rem;
+	cursor: pointer;
+}
+
+.action-btn.secondary {
+	background: transparent;
+	color: #0f766e;
+}
+
+@media (max-width: 900px) {
+	.details-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+:host-context(body.dark-mode) .details-page {
+	background:
+		radial-gradient(circle at 8% 12%, rgba(45, 212, 191, 0.08), transparent 30%),
+		linear-gradient(180deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.98));
+}
+
+:host-context(body.dark-mode) .details-header h1,
+:host-context(body.dark-mode) .panel-card h2,
+:host-context(body.dark-mode) .content-block span,
+:host-context(body.dark-mode) .content-block p {
+	color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .back-link {
+	color: #5eead4;
+}
+
+:host-context(body.dark-mode) .state-text {
+	color: #94a3b8;
+}
+
+:host-context(body.dark-mode) .state-text.success {
+	color: #5eead4;
+}
+
+:host-context(body.dark-mode) .panel-card {
+	background: rgba(15, 23, 42, 0.9);
+	border-color: rgba(148, 163, 184, 0.12);
+	box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
+}
+
+:host-context(body.dark-mode) .edit-form label span,
+:host-context(body.dark-mode) .action-btn.secondary {
+	color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .edit-form input,
+:host-context(body.dark-mode) .edit-form select,
+:host-context(body.dark-mode) .edit-form textarea {
+	background: rgba(15, 23, 42, 0.94);
+	border-color: rgba(148, 163, 184, 0.16);
+	color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .action-btn {
+	border-color: #0d9488;
+	background: #0d9488;
+}
+
+:host-context(body.dark-mode) .action-btn.secondary {
+	border-color: rgba(148, 163, 184, 0.26);
+	background: transparent;
+}

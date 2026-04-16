@@ -4,6 +4,7 @@ import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { API_BASE_URLS } from '../core/api.config';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login-component',
@@ -30,7 +31,8 @@ export class LoginComponent {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private auth: AuthService
   ) {}
 
   login(): void {
@@ -40,11 +42,11 @@ export class LoginComponent {
     }
     
     const payload = {
-      email: this.loginForm.value.email?.trim(),
-      password: this.loginForm.value.password?.trim(),
+      email: this.loginForm.value.email?.trim() || '',
+      password: this.loginForm.value.password?.trim() || '',
     };
 
-    console.log('payload sent:', payload); 
+
 
     this.isLoading = true;
 
@@ -59,15 +61,16 @@ export class LoginComponent {
     )
     .subscribe({
       next: (res) => {
-        console.log('success', res);
 
         if (res.token) {
-          sessionStorage.setItem('token', res.token);
-        }
+          this.auth.login(res.token, payload.email); 
 
+
+
+        }
         this.toastr.success('Connexion réussie !');
 
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('ERROR:', err);
