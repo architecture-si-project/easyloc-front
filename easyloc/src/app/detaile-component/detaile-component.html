@@ -1,0 +1,97 @@
+<section class="details-page">
+	<div class="details-shell">
+		<header class="details-header">
+			<a routerLink="/profile" class="back-link">Retour au profil</a>
+			<h1>Details du logement</h1>
+		</header>
+
+		<div class="details-grid">
+			<article class="panel-card">
+				<h2>Detail du logement</h2>
+
+				<p *ngIf="isLoadingHousing" class="state-text">Chargement du logement...</p>
+				<p *ngIf="!isLoadingHousing && housingError" class="state-text error">{{ housingError }}</p>
+				<p *ngIf="!isLoadingHousing && !housingError && saveError" class="state-text error">{{ saveError }}</p>
+				<p *ngIf="!isLoadingHousing && !housingError && saveSuccess" class="state-text success">{{ saveSuccess }}</p>
+
+				<div *ngIf="!isLoadingHousing && !housingError && housing" class="content-block">
+					<div class="actions-row" *ngIf="!isEditingHousing">
+						<button type="button" class="action-btn" (click)="startEditingHousing()">Modifier</button>
+					</div>
+
+					<div *ngIf="!isEditingHousing" class="content-block">
+						<p><span>Titre:</span> {{ housing.title || 'Sans titre' }}</p>
+						<p><span>Description:</span> {{ housing.description || 'Aucune description' }}</p>
+						<p><span>Ville:</span> {{ housing.location || 'N/A' }}</p>
+						<p><span>Type:</span> {{ housing.property_type || 'N/A' }}</p>
+						<p><span>Prix:</span> €{{ formatPrice(housing.price_per_night) }} / nuit</p>
+						<p><span>Disponible:</span> {{ housing.available ? 'Oui' : 'Non' }}</p>
+						<p><span>Cree le:</span> {{ formatDate(housing.created_at) }}</p>
+						<p><span>Mis a jour le:</span> {{ formatDate(housing.updated_at) }}</p>
+					</div>
+
+					<form *ngIf="isEditingHousing" class="edit-form" (ngSubmit)="saveHousing()">
+						<label>
+							<span>Titre</span>
+							<input type="text" [(ngModel)]="editableHousing.title" name="title" required />
+						</label>
+
+						<label>
+							<span>Description</span>
+							<textarea [(ngModel)]="editableHousing.description" name="description" rows="3"></textarea>
+						</label>
+
+						<label>
+							<span>Ville</span>
+							<input type="text" [(ngModel)]="editableHousing.location" name="location" required />
+						</label>
+
+						<label>
+							<span>Type</span>
+							<select [(ngModel)]="editableHousing.property_type" name="property_type" required>
+								<option value="maison">Maison</option>
+								<option value="appartement">Appartement</option>
+								<option value="studio">Studio</option>
+								<option value="villa">Villa</option>
+							</select>
+						</label>
+
+						<label>
+							<span>Prix par nuit</span>
+							<input type="number" [(ngModel)]="editableHousing.price_per_night" name="price_per_night" min="0" step="0.01" required />
+						</label>
+
+						<label class="checkbox-row">
+							<input type="checkbox" [(ngModel)]="editableHousing.available" name="available" />
+							<span>Disponible</span>
+						</label>
+
+						<div class="actions-row">
+							<button type="submit" class="action-btn" [disabled]="isSavingHousing">
+								{{ isSavingHousing ? 'Sauvegarde...' : 'Enregistrer' }}
+							</button>
+							<button type="button" class="action-btn secondary" (click)="cancelEditingHousing()" [disabled]="isSavingHousing">
+								Annuler
+							</button>
+						</div>
+					</form>
+				</div>
+			</article>
+
+			<article class="panel-card">
+				<h2>Detail de la reservation</h2>
+
+				<p *ngIf="isLoadingReservation" class="state-text">Chargement de la reservation...</p>
+				<p *ngIf="!isLoadingReservation && reservationError" class="state-text error">{{ reservationError }}</p>
+
+				<div *ngIf="!isLoadingReservation && !reservationError && reservation" class="content-block">
+					<p><span>ID:</span> {{ reservation.id }}</p>
+					<p><span>Statut:</span> {{ reservation.status || reservation.state || 'N/A' }}</p>
+					<p><span>Periode:</span> {{ getReservationDateRange() }}</p>
+					<p *ngIf="reservation.total_price || reservation.price"><span>Montant:</span> €{{ reservation.total_price || reservation.price }}</p>
+					<p *ngIf="reservation.message"><span>Message:</span> {{ reservation.message }}</p>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>

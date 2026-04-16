@@ -1,0 +1,230 @@
+:host {
+	display: block;
+	min-height: 100vh;
+	font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-page {
+	position: relative;
+	min-height: 100vh;
+	padding: clamp(1.1rem, 2.4vw, 2.2rem);
+	background:
+		radial-gradient(circle at 10% 10%, rgba(15, 118, 110, 0.14), transparent 34%),
+		radial-gradient(circle at 86% 92%, rgba(245, 158, 11, 0.1), transparent 34%),
+		linear-gradient(145deg, #f8f4ec, #ece4d6);
+	overflow: hidden;
+}
+
+.orb {
+	position: absolute;
+	border-radius: 999px;
+	z-index: 0;
+}
+
+.orb-1 {
+	width: 260px;
+	height: 260px;
+	top: -90px;
+	right: -80px;
+	background: radial-gradient(circle, rgba(20, 184, 166, 0.24), rgba(20, 184, 166, 0));
+}
+
+.orb-2 {
+	width: 210px;
+	height: 210px;
+	bottom: -80px;
+	left: -60px;
+	background: radial-gradient(circle, rgba(249, 115, 22, 0.2), rgba(249, 115, 22, 0));
+}
+
+.profile-shell {
+	position: relative;
+	z-index: 1;
+	width: min(1140px, 100%);
+	margin: 0 auto;
+	display: grid;
+	gap: 1.2rem;
+}
+
+.profile-header h1 {
+	margin: 0.2rem 0 0.3rem;
+	font-size: clamp(1.6rem, 2.8vw, 2.5rem);
+	color: #0f172a;
+}
+
+.eyebrow {
+	margin: 0;
+	font-size: 0.82rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #0f766e;
+	font-weight: 700;
+}
+
+.subtitle {
+	margin: 0;
+	color: #64748b;
+}
+
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.9rem;
+}
+
+.stat-card,
+.stat-cta {
+	background: rgba(255, 255, 255, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1rem;
+	padding: 1rem;
+	box-shadow: 0 12px 24px rgba(22, 30, 45, 0.08);
+	text-decoration: none;
+}
+
+.stat-label {
+	margin: 0;
+	color: #64748b;
+	font-size: 0.9rem;
+}
+
+.stat-value {
+	margin: 0.35rem 0 0;
+	color: #0f172a;
+	font-size: 1.9rem;
+	font-weight: 700;
+}
+
+.stat-cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(125deg, #0f766e, #0d9488);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.panels-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.panel-card {
+	background: rgba(255, 255, 255, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1rem;
+	padding: 1rem;
+	box-shadow: 0 12px 24px rgba(22, 30, 45, 0.08);
+	display: grid;
+	gap: 0.9rem;
+}
+
+.panel-head h2 {
+	margin: 0;
+	color: #0f172a;
+}
+
+.state-text {
+	margin: 0;
+	color: #64748b;
+}
+
+.state-text.error {
+	color: #dc2626;
+}
+
+.list-grid {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.item-card {
+	border: 1px solid #e2e8f0;
+	border-radius: 0.85rem;
+	padding: 0.8rem;
+	background: rgba(255, 255, 255, 0.76);
+}
+
+.housing-link {
+	display: block;
+	text-decoration: none;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.housing-link:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 24px rgba(22, 30, 45, 0.12);
+}
+
+.item-card h3 {
+	margin: 0;
+	color: #0f172a;
+	font-size: 1rem;
+}
+
+.item-line {
+	margin: 0.3rem 0 0;
+	color: #334155;
+	font-size: 0.92rem;
+}
+
+.item-line.muted {
+	color: #64748b;
+}
+
+.item-price {
+	margin: 0.45rem 0 0;
+	color: #0d9488;
+	font-weight: 700;
+}
+
+@media (max-width: 960px) {
+	.stats-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.panels-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 680px) {
+	.stats-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+:host-context(body.dark-mode) .profile-page {
+	background:
+		radial-gradient(circle at 15% 12%, rgba(45, 212, 191, 0.08), transparent 30%),
+		linear-gradient(180deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.98));
+}
+
+:host-context(body.dark-mode) .profile-header h1,
+:host-context(body.dark-mode) .panel-head h2,
+:host-context(body.dark-mode) .item-card h3,
+:host-context(body.dark-mode) .stat-value,
+:host-context(body.dark-mode) .item-line,
+:host-context(body.dark-mode) .item-price {
+	color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .subtitle,
+:host-context(body.dark-mode) .state-text,
+:host-context(body.dark-mode) .item-line.muted,
+:host-context(body.dark-mode) .stat-label {
+	color: #94a3b8;
+}
+
+:host-context(body.dark-mode) .stat-card,
+:host-context(body.dark-mode) .panel-card,
+:host-context(body.dark-mode) .item-card {
+	background: rgba(15, 23, 42, 0.9);
+	border-color: rgba(148, 163, 184, 0.12);
+	box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
+}
+
+:host-context(body.dark-mode) .housing-link:hover {
+	box-shadow: 0 16px 28px rgba(2, 6, 23, 0.55);
+}
