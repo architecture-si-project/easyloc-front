@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 
 import { ReservationRequest, ReservationStatus } from '../core/models/reservation.model';
-import { ReservationService } from '../core/services/reservation.service';
+import { ResaService } from '../services/resaService';
 
 @Component({
   selector: 'app-tracking-page',
@@ -22,14 +22,6 @@ export class TrackingPageComponent implements OnInit {
     'rejected',
     'cancelled',
   ];
-
-  readonly filterForm = new FormGroup({
-    status: new FormControl<string>('pending', { nonNullable: true }),
-    tenantId: new FormControl<number>(1, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(1)],
-    }),
-  });
 
   readonly updateForm = new FormGroup({
     reservationId: new FormControl<number | null>(null, {
@@ -51,7 +43,7 @@ export class TrackingPageComponent implements OnInit {
   isUpdatingStatus = false;
 
   constructor(
-    private readonly reservationService: ReservationService,
+    private readonly reservationService: ResaService,
     private readonly toastr: ToastrService,
   ) {}
 
@@ -60,18 +52,10 @@ export class TrackingPageComponent implements OnInit {
   }
 
   loadRequests(): void {
-    if (this.filterForm.invalid) {
-      this.filterForm.markAllAsTouched();
-      return;
-    }
-
     this.isLoadingRequests = true;
 
     this.reservationService
-      .listReservationRequests({
-        status: this.filterForm.controls.status.value.trim(),
-        tenant_id: this.filterForm.controls.tenantId.value,
-      })
+      .listReservationRequests()
       .pipe(finalize(() => (this.isLoadingRequests = false)))
       .subscribe({
         next: (requests) => {

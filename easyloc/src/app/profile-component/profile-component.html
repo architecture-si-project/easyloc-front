@@ -50,21 +50,21 @@
 
 			<section class="panel-card">
 				<div class="panel-head">
-					<h2>Mes reservations</h2>
+					<h2>Mes demandes de réservation</h2>
 				</div>
 
-				<p *ngIf="isLoadingReservations" class="state-text">Chargement des reservations...</p>
+				<p *ngIf="isLoadingReservations" class="state-text">Chargement des demandes...</p>
 				<p *ngIf="!isLoadingReservations && reservationError" class="state-text error">{{ reservationError }}</p>
 				<p *ngIf="!isLoadingReservations && !reservationError && userReservations.length === 0" class="state-text">
-					Aucune reservation trouvee.
+					Aucune demande de réservation.
 				</p>
 
 				<div class="list-grid" *ngIf="!isLoadingReservations && !reservationError && userReservations.length > 0">
 					<article class="item-card" *ngFor="let resa of userReservations; trackBy: trackById">
-						<h3>{{ getReservationTitle(resa) }}</h3>
-						<p class="item-line">{{ getReservationDates(resa) }}</p>
-						<p class="item-line muted">{{ resa.status || resa.state || 'Statut inconnu' }}</p>
-						<p class="item-price" *ngIf="resa.total_price || resa.price">€{{ resa.total_price || resa.price }}</p>
+						<h3>{{ resa.title }}</h3>
+						<p class="item-line">📅 {{ resa.dateRange }}</p>
+						<p class="item-line muted">{{ resa.status.label }}</p>
+						<p *ngIf="resa.notes" class="item-line" title="Notes">{{ resa.notes }}</p>
 					</article>
 				</div>
 			</section>

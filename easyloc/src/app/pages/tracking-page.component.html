@@ -4,23 +4,9 @@
       <h1>Suivi des demandes</h1>
       <p class="subtitle">Consultez les demandes de reservation et suivez leur etat.</p>
 
-      <form [formGroup]="filterForm" (ngSubmit)="loadRequests()" class="filter-form">
-        <label>
-          Statut
-          <select formControlName="status">
-            @for (status of statusOptions; track status) {
-              <option [value]="status">{{ status }}</option>
-            }
-          </select>
-        </label>
-
-        <label>
-          Tenant ID
-          <input type="number" min="1" formControlName="tenantId" />
-        </label>
-
-        <button type="submit" class="btn btn-primary">Filtrer</button>
-      </form>
+      <button type="button" class="btn btn-secondary" (click)="loadRequests()" [disabled]="isLoadingRequests">
+        Rafraichir
+      </button>
 
       @if (isLoadingRequests) {
         <p class="info">Chargement des demandes...</p>

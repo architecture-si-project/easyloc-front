@@ -1,7 +1,18 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { HousingService } from '../services/HousingService';
 import { ResaService } from '../services/resaService';
+
+interface ReservationDisplay {
+  id: number;
+  title: string;
+  dateRange: string;
+  status: { value: string; label: string };
+  notes?: string;
+  housing_id?: number;
+}
 
 @Component({
   selector: 'app-profile-component',
@@ -11,13 +22,21 @@ import { ResaService } from '../services/resaService';
 })
 export class ProfileComponent implements OnInit {
   userHousings: any[] = [];
-  userReservations: any[] = [];
+  userReservations: ReservationDisplay[] = [];
 
   isLoadingHousings = true;
   isLoadingReservations = true;
 
   housingError = '';
   reservationError = '';
+
+  private statusLabels: Record<string, string> = {
+    pending: 'En attente',
+    under_review: 'En cours d\'examen',
+    approved: 'Approuvée',
+    rejected: 'Rejetée',
+    cancelled: 'Annulée',
+  };
 
   constructor(
     private housingService: HousingService,
@@ -58,7 +77,9 @@ export class ProfileComponent implements OnInit {
     this.resaService.getUserResa().subscribe({
       next: (data) => {
         console.log('PROFILE RESERVATION DATA:', data);
-        this.userReservations = this.normalizeArray(data);
+        const rawReservations = this.normalizeArray(data);
+        this.userReservations = rawReservations.map((resa) => this.transformReservation(resa));
+        this.enrichReservationHousingTitles();
         this.isLoadingReservations = false;
         this.cdr.detectChanges();
       },
@@ -146,6 +167,120 @@ export class ProfileComponent implements OnInit {
     return `Impossible de charger vos ${resource} pour le moment.`;
   }
 
+  private transformReservation(resa: any): ReservationDisplay {
+    const status = resa?.status || 'unknown';
+    return {
+      id: resa?.id || resa?.reservation_id || 0,
+      title: resa?.housing_title || resa?.housing?.title || resa?.title || 'Logement sans titre',
+      dateRange: this.formatDateRange(resa?.start_date, resa?.end_date),
+      status: {
+        value: status,
+        label: this.statusLabels[status] || status,
+      },
+      notes: resa?.notes,
+      housing_id: resa?.housing_id || resa?.housing?.id || undefined,
+    };
+  }
+
+  private formatDateRange(startDate: string, endDate: string): string {
+    if (!startDate && !endDate) {
+      return 'Dates non disponibles';
+    }
+
+    const formatDate = (date: string) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    };
+
+    const start = formatDate(startDate);
+    const end = formatDate(endDate);
+
+    if (start && end) {
+      return `${start} - ${end}`;
+    }
+
+    return start || end;
+  }
+
+  private enrichReservationHousingTitles(): void {
+    const missingHousingIds = Array.from(
+      new Set(
+        this.userReservations
+          .filter((reservation) => this.isMissingHousingTitle(reservation.title))
+          .map((reservation) => Number(reservation.housing_id))
+          .filter((housingId) => Number.isFinite(housingId) && housingId > 0),
+      ),
+    );
+
+    if (missingHousingIds.length === 0) {
+      return;
+    }
+
+    const requests = missingHousingIds.map((housingId) =>
+      this.housingService.getById(housingId).pipe(
+        map((payload) => ({ housingId, title: this.extractHousingTitle(payload) })),
+        catchError(() => of({ housingId, title: '' })),
+      ),
+    );
+
+    forkJoin(requests).subscribe((housingResults) => {
+      const housingTitleMap = new Map<number, string>();
+      housingResults.forEach((result) => {
+        if (result.title) {
+          housingTitleMap.set(result.housingId, result.title);
+        }
+      });
+
+      this.userReservations = this.userReservations.map((reservation) => {
+        const reservationHousingId = Number(reservation.housing_id);
+        const resolvedTitle = housingTitleMap.get(reservationHousingId);
+
+        if (!resolvedTitle || !this.isMissingHousingTitle(reservation.title)) {
+          return reservation;
+        }
+
+        return {
+          ...reservation,
+          title: resolvedTitle,
+        };
+      });
+
+      this.cdr.detectChanges();
+    });
+  }
+
+  private isMissingHousingTitle(title: string | undefined): boolean {
+    if (!title) {
+      return true;
+    }
+
+    const normalizedTitle = title.trim().toLowerCase();
+    return normalizedTitle.length === 0 || normalizedTitle === 'logement sans titre';
+  }
+
+  private extractHousingTitle(payload: any): string {
+    const housing = this.unwrapObject(payload);
+    const title = typeof housing?.title === 'string' ? housing.title.trim() : '';
+    return title;
+  }
+
+  private unwrapObject(payload: any): any {
+    if (!payload || typeof payload !== 'object') {
+      return payload;
+    }
+
+    if (payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data)) {
+      return payload.data;
+    }
+
+    if (payload.result && typeof payload.result === 'object' && !Array.isArray(payload.result)) {
+      return payload.result;
+    }
+
+    return payload;
+  }
+
   getReservationTitle(resa: any): string {
     return (
       resa?.housing_title ||
@@ -176,8 +311,7 @@ export class ProfileComponent implements OnInit {
 
   getHousingDetailQueryParams(housingId: number): { reservationId: number } | null {
     const relatedReservation = this.userReservations.find((resa) => {
-      const resaHousingId = resa?.housing_id || resa?.housing?.id || resa?.housing?.housing_id;
-      return Number(resaHousingId) === Number(housingId);
+      return Number(resa?.housing_id) === Number(housingId);
     });
 
     if (relatedReservation?.id) {
