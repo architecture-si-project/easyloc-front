@@ -16,7 +16,7 @@
           id="email"
           type="email"
           formControlName="email"
-          placeholder="nom@entreprise.com"
+          placeholder="nom@mail.com"
         />
         @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
           <p class="field-error">Email invalide</p>
@@ -34,14 +34,6 @@
         @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
           <p class="field-error">Mot de passe requis</p>
         }
-      </div>
-
-      <div class="row-meta">
-        <label class="remember-toggle">
-          <input type="checkbox" />
-          <span>Se souvenir de moi</span>
-        </label>
-        <a class="link-muted">Mot de passe oublie ?</a>
       </div>
 
       <button type="submit" [disabled]="isLoading" class="submit-btn">

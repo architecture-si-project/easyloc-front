@@ -134,6 +134,10 @@
 	color: #dc2626;
 }
 
+.state-text.success {
+	color: #0d9488;
+}
+
 .list-grid {
 	display: grid;
 	gap: 0.75rem;
@@ -179,6 +183,29 @@
 	font-weight: 700;
 }
 
+.cancel-btn {
+	margin-top: 0.7rem;
+	border: 1px solid #fca5a5;
+	background: #fff1f2;
+	color: #b91c1c;
+	border-radius: 0.65rem;
+	padding: 0.45rem 0.7rem;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.cancel-btn:hover:not(:disabled) {
+	background: #ffe4e6;
+	transform: translateY(-1px);
+}
+
+.cancel-btn:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
 @media (max-width: 960px) {
 	.stats-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,6 +244,10 @@
 	color: #94a3b8;
 }
 
+:host-context(body.dark-mode) .state-text.success {
+	color: #2dd4bf;
+}
+
 :host-context(body.dark-mode) .stat-card,
 :host-context(body.dark-mode) .panel-card,
 :host-context(body.dark-mode) .item-card {
@@ -227,4 +258,14 @@
 
 :host-context(body.dark-mode) .housing-link:hover {
 	box-shadow: 0 16px 28px rgba(2, 6, 23, 0.55);
+}
+
+:host-context(body.dark-mode) .cancel-btn {
+	background: rgba(127, 29, 29, 0.28);
+	border-color: rgba(248, 113, 113, 0.5);
+	color: #fecaca;
+}
+
+:host-context(body.dark-mode) .cancel-btn:hover:not(:disabled) {
+	background: rgba(127, 29, 29, 0.38);
 }

@@ -126,8 +126,7 @@
 								[ngClass]="{
 									'is-pending': (resa.status || '').toLowerCase() === 'pending',
 									'is-approved': (resa.status || '').toLowerCase() === 'approved',
-									'is-rejected': (resa.status || '').toLowerCase() === 'rejected',
-									'is-cancelled': (resa.status || '').toLowerCase() === 'cancelled'
+									'is-rejected': (resa.status || '').toLowerCase() === 'rejected' || (resa.status || '').toLowerCase() === 'closed'
 								}">
 								{{ resa.status || 'N/A' }}
 							</span>
