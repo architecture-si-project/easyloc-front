@@ -1,0 +1,82 @@
+<section class="profile-page">
+	<div class="orb orb-1" aria-hidden="true"></div>
+	<div class="orb orb-2" aria-hidden="true"></div>
+
+	<div class="profile-shell">
+		<header class="profile-header">
+			<p class="eyebrow">EasyLoc</p>
+			<h1>Mon profil</h1>
+			<p class="subtitle">Retrouvez vos logements et vos demandes de reservation.</p>
+		</header>
+
+		<div class="stats-grid">
+			<article class="stat-card">
+				<p class="stat-label">Mes logements</p>
+				<p class="stat-value">{{ userHousings.length }}</p>
+			</article>
+
+			<article class="stat-card">
+				<p class="stat-label">Mes reservations</p>
+				<p class="stat-value">{{ userReservations.length }}</p>
+			</article>
+
+			<a class="stat-cta" href="/createRental">Ajouter un logement</a>
+		</div>
+
+		<div class="panels-grid">
+			<section class="panel-card">
+				<div class="panel-head">
+					<h2>Mes logements</h2>
+				</div>
+
+				<p *ngIf="isLoadingHousings" class="state-text">Chargement des logements...</p>
+				<p *ngIf="!isLoadingHousings && housingError" class="state-text error">{{ housingError }}</p>
+				<p *ngIf="!isLoadingHousings && !housingError && userHousings.length === 0" class="state-text">
+					Aucun logement trouve.
+				</p>
+
+				<div class="list-grid" *ngIf="!isLoadingHousings && !housingError && userHousings.length > 0">
+					<a
+						class="item-card housing-link"
+						*ngFor="let housing of userHousings; trackBy: trackById"
+						[href]="getHousingDetailsUrl(housing.id)">
+						<h3>{{ housing.title || 'Sans titre' }}</h3>
+						<p class="item-line">{{ housing.location || 'Localisation non disponible' }}</p>
+						<p class="item-line muted">{{ housing.property_type || 'Type non precise' }}</p>
+						<p class="item-price">€{{ housing.price_per_night || 0 }} / nuit</p>
+					</a>
+				</div>
+			</section>
+
+			<section class="panel-card">
+				<div class="panel-head">
+					<h2>Mes demandes de réservation</h2>
+				</div>
+
+				<p *ngIf="isLoadingReservations" class="state-text">Chargement des demandes...</p>
+				<p *ngIf="!isLoadingReservations && reservationError" class="state-text error">{{ reservationError }}</p>
+				<p *ngIf="!isLoadingReservations && !reservationError && reservationActionMessage" class="state-text success">{{ reservationActionMessage }}</p>
+				<p *ngIf="!isLoadingReservations && !reservationError && userReservations.length === 0" class="state-text">
+					Aucune demande de réservation.
+				</p>
+
+				<div class="list-grid" *ngIf="!isLoadingReservations && !reservationError && userReservations.length > 0">
+					<article class="item-card" *ngFor="let resa of userReservations; trackBy: trackById">
+						<h3>{{ resa.title }}</h3>
+						<p class="item-line">📅 {{ resa.dateRange }}</p>
+						<p class="item-line muted">{{ resa.status.label }}</p>
+						<p *ngIf="resa.notes" class="item-line" title="Notes">{{ resa.notes }}</p>
+						<button
+							*ngIf="canCancelReservation(resa)"
+							type="button"
+							class="cancel-btn"
+							[disabled]="updatingReservationId === resa.id"
+							(click)="cancelReservation(resa)">
+							{{ updatingReservationId === resa.id ? 'Annulation...' : 'Annuler la reservation' }}
+						</button>
+					</article>
+				</div>
+			</section>
+		</div>
+	</div>
+</section>

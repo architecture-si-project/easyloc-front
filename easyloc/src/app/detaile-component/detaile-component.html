@@ -1,0 +1,162 @@
+<section class="details-page">
+	<div class="shape shape-a" aria-hidden="true"></div>
+	<div class="shape shape-b" aria-hidden="true"></div>
+
+	<div class="details-shell">
+		<header class="details-header">
+			<a routerLink="/profile" class="back-link">Retour au profil</a>
+			<p class="eyebrow">Gestion du logement</p>
+			<h1>Details du logement</h1>
+			<p class="header-subtitle">Consultez les informations du bien et suivez les demandes de reservation associees.</p>
+		</header>
+
+		<div class="details-grid">
+			<article class="panel-card housing-panel">
+				<div class="panel-head">
+					<h2>Informations du logement</h2>
+					<button type="button" class="action-btn" *ngIf="!isEditingHousing && !isLoadingHousing && !housingError" (click)="startEditingHousing()">
+						Modifier
+					</button>
+				</div>
+
+				<p *ngIf="isLoadingHousing" class="state-text">Chargement du logement...</p>
+				<p *ngIf="!isLoadingHousing && housingError" class="state-text error">{{ housingError }}</p>
+				<p *ngIf="!isLoadingHousing && !housingError && saveError" class="state-text error">{{ saveError }}</p>
+				<p *ngIf="!isLoadingHousing && !housingError && saveSuccess" class="state-text success">{{ saveSuccess }}</p>
+
+				<div *ngIf="!isLoadingHousing && !housingError && housing && !isEditingHousing" class="content-block">
+					<div class="title-price-row">
+						<h3>{{ housing.title || 'Sans titre' }}</h3>
+						<p class="price-pill">€{{ formatPrice(housing.price_per_night) }} / nuit</p>
+					</div>
+
+					<p class="housing-description">{{ housing.description || 'Aucune description' }}</p>
+
+					<div class="info-grid">
+						<div class="info-item">
+							<span class="info-label">Ville</span>
+							<span class="info-value">{{ housing.location || 'N/A' }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">Type</span>
+							<span class="info-value">{{ housing.property_type || 'N/A' }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">Disponibilite</span>
+							<span class="info-value">{{ housing.available ? 'Oui' : 'Non' }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">Cree le</span>
+							<span class="info-value">{{ formatDate(housing.created_at) }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">Mis a jour le</span>
+							<span class="info-value">{{ formatDate(housing.updated_at) }}</span>
+						</div>
+					</div>
+				</div>
+
+				<form *ngIf="isEditingHousing" class="edit-form" (ngSubmit)="saveHousing()">
+					<label>
+						<span>Titre</span>
+						<input type="text" [(ngModel)]="editableHousing.title" name="title" required />
+					</label>
+
+					<label>
+						<span>Description</span>
+						<textarea [(ngModel)]="editableHousing.description" name="description" rows="4"></textarea>
+					</label>
+
+					<div class="edit-grid">
+						<label>
+							<span>Ville</span>
+							<input type="text" [(ngModel)]="editableHousing.location" name="location" required />
+						</label>
+
+						<label>
+							<span>Type</span>
+							<select [(ngModel)]="editableHousing.property_type" name="property_type" required>
+								<option value="maison">Maison</option>
+								<option value="appartement">Appartement</option>
+								<option value="studio">Studio</option>
+								<option value="villa">Villa</option>
+							</select>
+						</label>
+
+						<label>
+							<span>Prix par nuit</span>
+							<input type="number" [(ngModel)]="editableHousing.price_per_night" name="price_per_night" min="0" step="0.01" required />
+						</label>
+					</div>
+
+					<label class="checkbox-row">
+						<input type="checkbox" [(ngModel)]="editableHousing.available" name="available" />
+						<span>Disponible</span>
+					</label>
+
+					<div class="actions-row">
+						<button type="submit" class="action-btn" [disabled]="isSavingHousing">
+							{{ isSavingHousing ? 'Sauvegarde...' : 'Enregistrer' }}
+						</button>
+						<button type="button" class="action-btn secondary" (click)="cancelEditingHousing()" [disabled]="isSavingHousing">
+							Annuler
+						</button>
+					</div>
+				</form>
+			</article>
+
+			<article class="panel-card reservations-panel">
+				<div class="panel-head">
+					<h2>Demandes de reservation</h2>
+					<span class="count-pill" *ngIf="!isLoadingReservations">{{ reservations.length }}</span>
+				</div>
+
+				<p *ngIf="isLoadingReservations" class="state-text">Chargement des demandes...</p>
+				<p *ngIf="!isLoadingReservations && reservationError" class="state-text error">{{ reservationError }}</p>
+				<p *ngIf="!isLoadingReservations && !reservationError && reservations.length === 0" class="state-text">
+					Aucune demande de reservation pour ce logement.
+				</p>
+
+				<div *ngIf="!isLoadingReservations && !reservationError && reservations.length > 0" class="reservations-list">
+					<article class="request-card" *ngFor="let resa of reservations">
+						<div class="request-head">
+							<p class="request-tenant">{{ getTenantLabel(resa) }}</p>
+							<span
+								class="status-pill"
+								[ngClass]="{
+									'is-pending': (resa.status || '').toLowerCase() === 'pending',
+									'is-approved': (resa.status || '').toLowerCase() === 'approved',
+									'is-rejected': (resa.status || '').toLowerCase() === 'rejected' || (resa.status || '').toLowerCase() === 'closed'
+								}">
+								{{ resa.status || 'N/A' }}
+							</span>
+						</div>
+
+						<div class="request-grid">
+							<p><span>Periode</span>{{ getReservationDateRange(resa) }}</p>
+							<p><span>Demande le</span>{{ formatDate(resa.created_at) }}</p>
+							<p *ngIf="resa.notes"><span>Notes</span>{{ resa.notes }}</p>
+						</div>
+
+						<div class="decision-row" *ngIf="canDecideReservation(resa)">
+							<button
+								type="button"
+								class="decision-btn approve"
+								[disabled]="updatingReservationId === getReservationId(resa)"
+								(click)="updateReservationDecision(resa, 'approved')">
+								✔ Accepter
+							</button>
+							<button
+								type="button"
+								class="decision-btn reject"
+								[disabled]="updatingReservationId === getReservationId(resa)"
+								(click)="updateReservationDecision(resa, 'rejected')">
+								✖ Refuser
+							</button>
+						</div>
+					</article>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>

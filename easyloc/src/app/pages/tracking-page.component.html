@@ -1,0 +1,78 @@
+<main class="tracking-shell">
+  <section class="tracking-grid">
+    <article class="panel">
+      <h1>Suivi des demandes</h1>
+      <p class="subtitle">Consultez les demandes de reservation et suivez leur etat.</p>
+
+      <button type="button" class="btn btn-secondary" (click)="loadRequests()" [disabled]="isLoadingRequests">
+        Rafraichir
+      </button>
+
+      @if (isLoadingRequests) {
+        <p class="info">Chargement des demandes...</p>
+      }
+
+      @if (!isLoadingRequests && requests.length === 0) {
+        <p class="info">Aucune demande pour ce filtre.</p>
+      }
+
+      <div class="request-list">
+        @for (request of requests; track request.id) {
+          <div class="request-card">
+            <div class="card-head">
+              <h3>Demande #{{ request.id }}</h3>
+              <span class="status-pill" [class]="statusClass(request.status)">
+                {{ request.status }}
+              </span>
+            </div>
+
+            <p>Housing: {{ request.housing_id }} | Tenant: {{ request.tenant_id }}</p>
+            <p>Du {{ request.start_date }} au {{ request.end_date }}</p>
+
+            @if (request.notes) {
+              <p>Notes: {{ request.notes }}</p>
+            }
+
+            <button type="button" class="btn btn-secondary" (click)="prepareUpdate(request)">
+              Mettre a jour ce statut
+            </button>
+          </div>
+        }
+      </div>
+    </article>
+
+    <aside class="panel">
+      <h2>Mise a jour du statut</h2>
+
+      <form [formGroup]="updateForm" (ngSubmit)="updateReservationStatus()" class="update-form">
+        <label>
+          Reservation ID
+          <input type="number" min="1" formControlName="reservationId" />
+        </label>
+
+        <label>
+          Nouveau statut
+          <select formControlName="status">
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Actor ID
+          <input type="number" min="1" formControlName="actorId" />
+        </label>
+
+        <label>
+          Commentaire
+          <textarea rows="4" formControlName="comment" placeholder="Ex: Documents valides"></textarea>
+        </label>
+
+        <button class="btn btn-primary" type="submit" [disabled]="isUpdatingStatus">
+          {{ isUpdatingStatus ? 'Mise a jour...' : 'Mettre a jour' }}
+        </button>
+      </form>
+    </aside>
+  </section>
+</main>

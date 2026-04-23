@@ -1,0 +1,49 @@
+<section class="auth-page">
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div class="auth-card">
+    <div class="brand-block">
+      <p class="eyebrow">EasyLoc</p>
+      <h1>Heureux de vous revoir.</h1>
+      <p>Connectez-vous pour gerer vos logements et vos reservations.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="auth-form">
+      <div class="field-group">
+        <label for="email">Votre mail</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="nom@mail.com"
+        />
+        @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+          <p class="field-error">Email invalide</p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+        />
+        @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+          <p class="field-error">Mot de passe requis</p>
+        }
+      </div>
+
+      <button type="submit" [disabled]="isLoading" class="submit-btn">
+        {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+      </button>
+
+      <p class="switch-link">
+        Pas de compte ?
+        <a routerLink="/signup">S'inscrire</a>
+      </p>
+    </form>
+  </div>
+</section>

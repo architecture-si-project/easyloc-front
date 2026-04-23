@@ -1,0 +1,92 @@
+<main class="reservation-shell">
+  <section class="reservation-single">
+    <article class="panel reservation-panel">
+      <p class="eyebrow">EasyLoc Reservation</p>
+      <h1>Reserver votre logement</h1>
+      <p class="subtitle">Cette page sert uniquement a verifier la disponibilite puis choisir vos dates de reservation.</p>
+
+      @if (!selectedHousing) {
+        <div class="empty-selection">
+          <p class="info">Aucun logement selectionne. Choisissez un logement depuis le dashboard pour reserver.</p>
+          <a class="btn btn-secondary" routerLink="/dashboard">Aller au dashboard</a>
+        </div>
+      }
+
+      @if (selectedHousing) {
+        <section class="selected-housing">
+          <div>
+            <p class="label">Logement</p>
+            <h2>{{ selectedHousing.title }}</h2>
+            <p class="meta">{{ selectedHousing.location }} - {{ selectedHousing.property_type }}</p>
+          </div>
+          <div class="price-block">
+            <span class="status" [class.open]="selectedHousing.available" [class.closed]="!selectedHousing.available">
+              {{ selectedHousing.available ? 'Disponible' : 'Indisponible' }}
+            </span>
+            <strong>{{ selectedHousing.price_per_night }} EUR / nuit</strong>
+          </div>
+        </section>
+
+        <div class="availability-box">
+          <h3>Periodes deja reservees</h3>
+
+          @if (isLoadingAvailability) {
+            <p class="info">Chargement des periodes...</p>
+          }
+
+          @if (!isLoadingAvailability && availabilityError) {
+            <p class="info warning">{{ availabilityError }}</p>
+          }
+
+          @if (!isLoadingAvailability && !availabilityError && unavailablePeriods.length === 0) {
+            <p class="info success">Aucun blocage connu. Vous pouvez selectionner vos dates.</p>
+          }
+
+          @if (!isLoadingAvailability && unavailablePeriods.length > 0) {
+            <ul class="period-list">
+              @for (period of unavailablePeriods; track trackRequestId($index, period)) {
+                <li>
+                  <span>{{ formatDate(period.start_date) }} -> {{ formatDate(period.end_date) }}</span>
+                  <span class="status-pill" [class]="statusClass(period.status)">{{ period.status }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <form [formGroup]="reservationForm" (ngSubmit)="createReservationRequest()" class="reservation-form">
+          <input type="hidden" formControlName="housingId" />
+
+          <div class="date-grid">
+            <label>
+              Date de debut
+              <input type="date" [min]="todayDate" formControlName="startDate" />
+            </label>
+
+            <label>
+              Date de fin
+              <input
+                type="date"
+                [min]="reservationForm.controls.startDate.value || todayDate"
+                formControlName="endDate"
+              />
+            </label>
+          </div>
+
+          @if (hasSelectedDateConflict) {
+            <p class="info warning">Ces dates chevauchent une periode deja reservee.</p>
+          }
+
+          <label>
+            Notes
+            <textarea rows="4" formControlName="notes" placeholder="Ex: Arrivee tardive"></textarea>
+          </label>
+
+          <button class="btn btn-primary" type="submit" [disabled]="!canSubmitReservation">
+            {{ isSubmittingReservation ? 'Envoi...' : 'Reserver' }}
+          </button>
+        </form>
+      }
+    </article>
+  </section>
+</main>

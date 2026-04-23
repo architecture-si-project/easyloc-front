@@ -1,0 +1,62 @@
+<section class="auth-page">
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div class="auth-card">
+    <div class="brand-block">
+      <p class="eyebrow">EasyLoc</p>
+      <h1>Creez votre compte.</h1>
+      <p>Inscrivez-vous pour publier vos logements et gerer vos reservations.</p>
+    </div>
+
+    <form [formGroup]="signUpForm" (ngSubmit)="signup()" novalidate class="auth-form">
+      <div class="field-group">
+        <label for="email">Votre mail</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="nom@entreprise.com"
+        />
+        @if (signUpForm.get('email')?.touched && signUpForm.get('email')?.invalid) {
+          <p class="field-error">Email invalide</p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="name">Votre nom</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Votre nom"
+        />
+        @if (signUpForm.get('name')?.touched && signUpForm.get('name')?.invalid) {
+          <p class="field-error">Nom obligatoire</p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+        />
+        @if (signUpForm.get('password')?.touched && signUpForm.get('password')?.invalid) {
+          <p class="field-error">Minimum 5 caracteres</p>
+        }
+      </div>
+
+      <button type="submit" [disabled]="signUpForm.invalid" class="submit-btn">
+        S'inscrire
+      </button>
+
+      <p class="switch-link">
+        Deja un compte ?
+        <a routerLink="/login">Se connecter</a>
+      </p>
+    </form>
+  </div>
+</section>
